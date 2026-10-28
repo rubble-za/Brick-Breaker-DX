@@ -55,6 +55,14 @@ The release APK is **debug-signed** (sideload only, `minifyEnabled false`). Copy
 
 Install on a phone: `adb -s <id> install -r dist/BrickBreaker-<version>.apk`.
 
+### Releases
+
+Each test build is also published as a GitHub release with the APK attached (APKs are gitignored, so releases are the way to get a build onto another machine without rebuilding). Current: `v0.2.1` at https://github.com/rubble-za/brick-breaker/releases/tag/v0.2.1. To publish a new one:
+
+`gh release create v<version> dist/BrickBreaker-<version>.apk --repo rubble-za/brick-breaker --title "Brick Breaker <version>" --notes "<notes>"`
+
+To fetch it on the laptop: `gh release download v0.2.1 --repo rubble-za/brick-breaker`.
+
 ## Gotchas
 
 - **Never key `pointerInput` on objects rebuilt every frame** (e.g. `FieldLayout`). It restarts and cancels every gesture, and the touch area silently stops working. Use `pointerInput(Unit)` plus `rememberUpdatedState`.

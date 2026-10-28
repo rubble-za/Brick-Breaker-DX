@@ -298,23 +298,32 @@ class GameEngineTest {
     }
 
     @Test
-    fun gunsFireAPairOfShotsOnEachPaddleBounce() {
+    fun gunFiresOneCentredShotPerSecond() {
         val e = engine("#.......1")
         e.catch(PowerUpType.GUNS)
-        assertEquals(GameEngine.GUN_VOLLEYS, e.gunVolleys)
-        e.bounceOnPaddle()
-        assertEquals(2, e.bullets.size)
-        assertEquals(GameEngine.GUN_VOLLEYS - 1, e.gunVolleys)
+        assertEquals(GameEngine.GUN_SHOTS, e.gunShots)
+        e.run(0.9f)
+        assertEquals(0, e.bullets.size)
+        e.run(0.2f)
+        assertEquals(1, e.bullets.size)
+        assertEquals(e.paddleX, e.bullets[0].x, 0.001f)
+        assertEquals(GameEngine.GUN_SHOTS - 1, e.gunShots)
     }
 
     @Test
-    fun gunsRunOutAfterTheirVolleys() {
-        val e = engine("#.......1")
+    fun gunRunsOutAfterTenShotsOverTenSeconds() {
+        val e = engine("333333333", "333333333", "333333333")
         val log = e.record()
         e.catch(PowerUpType.GUNS)
-        repeat(GameEngine.GUN_VOLLEYS + 2) { e.bounceOnPaddle() }
-        assertEquals(0, e.gunVolleys)
-        assertEquals(GameEngine.GUN_VOLLEYS, log.count { it == GameEvent.SHOOT })
+        e.run(15f) { e.balls.firstOrNull()?.x ?: e.paddleX } // follow the ball so no life is lost
+        assertEquals(0, e.gunShots)
+        assertEquals(10, log.count { it == GameEvent.SHOOT })
+    }
+
+    @Test
+    fun gunIsRarerThanTheOtherPowerUps() {
+        val guns = GameEngine.DROP_WEIGHTS.getValue(PowerUpType.GUNS)
+        assertTrue(GameEngine.DROP_WEIGHTS.filterKeys { it != PowerUpType.GUNS && it != PowerUpType.LIFE }.values.all { it > guns })
     }
 
     @Test
@@ -427,7 +436,7 @@ class GameEngineTest {
         e.balls[0].stuck = false
         e.balls[0].y = GameEngine.HEIGHT + 20f
         e.update(dt, e.paddleX)
-        assertEquals(0, e.gunVolleys)
+        assertEquals(0, e.gunShots)
         assertEquals(0, e.stickyCatches)
         assertTrue(e.bullets.isEmpty())
     }

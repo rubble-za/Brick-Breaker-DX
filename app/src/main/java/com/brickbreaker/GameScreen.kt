@@ -272,7 +272,7 @@ fun GameScreen() {
                         ) { Text("II", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        if (engine.gunVolleys > 0) Chip("G ${engine.gunVolleys}", PowerUpType.GUNS.color())
+                        if (engine.gunShots > 0) Chip("G ${engine.gunShots}", PowerUpType.GUNS.color())
                         if (engine.stickyCatches > 0) Chip("C ${engine.stickyCatches}", PowerUpType.STICKY.color())
                         if (engine.splitCharges > 0) Chip("Y ${engine.splitCharges}", PowerUpType.SPLIT.color())
                     }
@@ -409,11 +409,9 @@ private fun DrawScope.drawField(
 
         val paddleLeft = engine.paddleX - engine.paddleW / 2f
         val paddleTop = GameEngine.PADDLE_Y - GameEngine.PADDLE_H / 2f
-        if (engine.gunVolleys > 0) {
-            // Two barrels poking out of the top corners, matching where the shots leave.
-            for (gx in listOf(paddleLeft + 6f, paddleLeft + engine.paddleW - 6f)) {
-                drawRect(GunColor, Offset(gx - 2f, paddleTop - 6f), Size(4f, 8f))
-            }
+        if (engine.gunShots > 0) {
+            // One barrel poking out of the paddle centre, where the shots leave.
+            drawRect(GunColor, Offset(engine.paddleX - 2f, paddleTop - 6f), Size(4f, 8f))
         }
         drawRoundRect(
             if (engine.stickyCatches > 0) StickyPaddleColor else PaddleColor,

@@ -68,7 +68,8 @@ class GameEngine(
         const val WIDE_SECONDS = 12f
         const val MAX_BALLS = 6
         const val SLOW_FACTOR = 0.75f
-        const val GUN_VOLLEYS = 6 // paddle bounces that fire a pair of shots
+        const val GUN_SHOTS = 10 // shots from the centre gun, one per GUN_INTERVAL
+        const val GUN_INTERVAL = 1f
         const val STICKY_CATCHES = 5 // paddle bounces that catch the ball instead
         const val BULLET_SPEED = 520f
         const val BULLET_W = 3f
@@ -81,7 +82,7 @@ class GameEngine(
             PowerUpType.WIDE to 3,
             PowerUpType.MULTI to 3,
             PowerUpType.SLOW to 2,
-            PowerUpType.GUNS to 3,
+            PowerUpType.GUNS to 1,
             PowerUpType.STICKY to 3,
             PowerUpType.SPLIT to 3,
             PowerUpType.LIFE to 1,
@@ -115,7 +116,8 @@ class GameEngine(
     val powerUps = mutableListOf<PowerUp>()
     val bullets = mutableListOf<Bullet>()
 
-    var gunVolleys = 0; private set
+    var gunShots = 0; private set // shots left, so also roughly the seconds left
+    private var gunCooldown = 0f
     var stickyCatches = 0; private set
     var splitCharges = 0; private set
 
@@ -161,7 +163,8 @@ class GameEngine(
         bullets.clear()
         paddleW = PADDLE_W
         wideTimer = 0f
-        gunVolleys = 0
+        gunShots = 0
+        gunCooldown = 0f
         stickyCatches = 0
         splitCharges = 0
         pendingBalls.clear()
@@ -219,6 +222,14 @@ class GameEngine(
         if (wideTimer > 0f) {
             wideTimer -= dt
             if (wideTimer <= 0f) paddleW = PADDLE_W
+        }
+
+        if (gunShots > 0 && phase == Phase.PLAYING) {
+            gunCooldown -= dt
+            if (gunCooldown <= 0f) {
+                gunCooldown += GUN_INTERVAL
+                fireGun()
+            }
         }
 
         // Substep so a fast ball never moves more than half its radius at a time (no tunnelling).
@@ -295,14 +306,11 @@ class GameEngine(
             b.vy = 0f
             emit(GameEvent.STICK)
         }
-        if (gunVolleys > 0) fireGuns()
     }
 
-    private fun fireGuns() {
-        gunVolleys--
-        val y = PADDLE_Y - PADDLE_H / 2f
-        bullets += Bullet(paddleX - paddleW / 2f + 6f, y)
-        bullets += Bullet(paddleX + paddleW / 2f - 6f, y)
+    private fun fireGun() {
+        gunShots--
+        bullets += Bullet(paddleX, PADDLE_Y - PADDLE_H / 2f)
         emit(GameEvent.SHOOT)
     }
 
@@ -407,7 +415,7 @@ class GameEngine(
             PowerUpType.MULTI -> splitBalls()
             PowerUpType.SLOW -> setSpeed(max(BASE_SPEED, speed * SLOW_FACTOR))
             PowerUpType.LIFE -> lives = min(MAX_LIVES, lives + 1)
-            PowerUpType.GUNS -> gunVolleys = GUN_VOLLEYS
+            PowerUpType.GUNS -> { gunShots = GUN_SHOTS; gunCooldown = GUN_INTERVAL }
             PowerUpType.STICKY -> stickyCatches = STICKY_CATCHES
             PowerUpType.SPLIT -> splitCharges = SPLIT_BREAKS
         }

@@ -1,6 +1,6 @@
 # Brick Breaker (Android) - Handoff
 
-Status as of 2026-10-28: version **0.2.1** (versionCode 2), playtested on one phone (Xiaomi, adb id `195d2d2`). 51 unit tests passing.
+Status as of 2026-10-28: version **0.3.0** (versionCode 3), playtested on one phone (Xiaomi, adb id `195d2d2`). 52 unit tests passing.
 
 ## What this is
 
@@ -33,7 +33,7 @@ Kotlin 1.9.24, Compose BOM 2024.06.00 (compiler 1.5.14), AGP 8.5.2, Gradle 8.7, 
 | W | WIDE | Paddle 64 -> 100 for 12 s | 3 |
 | M | MULTI | Extra balls (max 6) | 3 |
 | S | SLOW | Slows the ball | 2 |
-| G | GUNS | Bullets on paddle bounces, 6 volleys; steel absorbs them | 3 |
+| G | GUNS | Single centre gun fires 1 shot/s for 10 s (10 shots); steel absorbs them | 1 |
 | C | STICKY | Ball sticks to paddle for 5 catches; tap to release | 3 |
 | Y | SPLIT | Next 5 breakable-brick hits split the ball | 3 |
 | + | LIFE | +1 life (max 5) | 1 |
@@ -57,11 +57,11 @@ Install on a phone: `adb -s <id> install -r dist/BrickBreaker-<version>.apk`.
 
 ### Releases
 
-Each test build is also published as a GitHub release with the APK attached (APKs are gitignored, so releases are the way to get a build onto another machine without rebuilding). Current: `v0.2.1` at https://github.com/rubble-za/brick-breaker/releases/tag/v0.2.1. To publish a new one:
+Each test build is also published as a GitHub release with the APK attached (APKs are gitignored, so releases are the way to get a build onto another machine without rebuilding). Current: `v0.3.0` at https://github.com/rubble-za/Brick-Breaker-DX/releases/tag/v0.3.0. To publish a new one:
 
-`gh release create v<version> dist/BrickBreaker-<version>.apk --repo rubble-za/brick-breaker --title "Brick Breaker <version>" --notes "<notes>"`
+`gh release create v<version> dist/BrickBreaker-<version>.apk --repo rubble-za/Brick-Breaker-DX --title "Brick Breaker <version>" --notes "<notes>"`
 
-To fetch it on the laptop: `gh release download v0.2.1 --repo rubble-za/brick-breaker`.
+To fetch it on the laptop: `gh release download v0.3.0 --repo rubble-za/Brick-Breaker-DX`.
 
 ## Gotchas
 
